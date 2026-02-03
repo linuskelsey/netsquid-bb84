@@ -3,15 +3,6 @@ from netsquid.components import QuantumChannel, ClassicalChannel
 from netsquid.components.models import DelayModel
 
 
-"""
-Initialise NetSquid-native network representation for BB84.
-
-- Alice and Bob nodes
-- One quantum channel from A -> B
-- Classical channels A <-> B
-"""
-
-
 class BB84DelayModel(DelayModel):
     """
     Delay Model for Quantum state transmission.
@@ -79,8 +70,8 @@ def net_init(node1 : str, node2 : str, distance : float, sol_fraction=0.5, std=0
                              channel_AtoB=qChannel_1)
     node1_obj.connect_to(remote_node=node2_obj,
                          connection=qconn,
-                         local_port_name="Q-O",
-                         remote_port_name="Q-I")
+                         local_port_name=f"[{node1}] Q-O",
+                         remote_port_name=f"[{node2}] Q-I")
     
     # Classical Channels (node1 <-> node2)
     cChannel_1 = ClassicalChannel(name=f"cchannel[{node1} to {node2}]",
@@ -94,7 +85,7 @@ def net_init(node1 : str, node2 : str, distance : float, sol_fraction=0.5, std=0
                              channel_BtoA=cChannel_2)
     node1_obj.connect_to(remote_node=node2_obj, 
                          connection=cconn,
-                         local_port_name="C-I/O",
-                         remote_port_name="C-I/O")
+                         local_port_name=f"[{node1}] C-IO",
+                         remote_port_name=f"[{node2}] C-IO")
     
     return node1_obj, node2_obj
