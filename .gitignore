@@ -1,2 +1,6 @@
 # vscode settings
 .vscode/*
+
+# pycache
+*.pyc
+/__pycache__/*
