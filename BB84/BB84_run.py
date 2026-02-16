@@ -19,7 +19,7 @@ import BB84_Bob
 import sys
 scriptpath = "lib/"
 sys.path.append(scriptpath)
-from functions import ManualFibreLossModel
+from lib.functions import ManualFibreLossModel
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -60,7 +60,7 @@ def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,proc
 
         # processors===============================================================
         #noise_model=None
-        Alice_processor=QuantumProcessor("processor_A", num_positions=2*10**3,
+        Alice_processor=QuantumProcessor("processor_A", num_positions=2*10**2,
             mem_noise_models=memNoiseMmodel, phys_instructions=[
             PhysicalInstruction(INSTR_X, duration=5, quantum_noise_model=processorNoiseModel),
             PhysicalInstruction(INSTR_H, duration=5, quantum_noise_model=processorNoiseModel),
@@ -68,7 +68,7 @@ def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,proc
             PhysicalInstruction(INSTR_MEASURE_X, duration=3700,quantum_noise_model=processorNoiseModel, parallel=True)])
 
 
-        Bob_processor=QuantumProcessor("processor_B", num_positions=2*10**3,
+        Bob_processor=QuantumProcessor("processor_B", num_positions=2*10**2,
             mem_noise_models=memNoiseMmodel, phys_instructions=[
             PhysicalInstruction(INSTR_X, duration=5, quantum_noise_model=processorNoiseModel),
             PhysicalInstruction(INSTR_H, duration=5, quantum_noise_model=processorNoiseModel),
@@ -80,7 +80,7 @@ def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,proc
         
         MyQChannel=QuantumChannel("QChannel_A->B",delay=qdelay
             ,length=fibreLen
-            ,models={"myFibreLossModel": FibreLossModel(p_loss_init=0.2, p_loss_length=0.046, rng=None)
+            ,models={"myFibreLossModel": FibreLossModel(p_loss_init=0, p_loss_length=0, rng=None)
             ,"mydelay_model": FibreDelayModel(c=qSpeed)
             ,"myFibreNoiseModel":DepolarNoiseModel(depolar_rate=fibreNoise, time_independent=False)})
         
@@ -143,11 +143,3 @@ def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,proc
 
         
     return MyKeyList_A, MyKeyList_B, MyKeyRateList
-
-
-
-
-
-
-
-

@@ -18,7 +18,7 @@ if __name__ == "__main__":
     #myprocessorNoiseModel=DepolarNoiseModel(depolar_rate=500)
     #myprocessorNoiseModel=DephaseNoiseModel(dephase_rate=0.004,time_independent=True)
 
-    toWrite=run_BB84_sim(runtimes=10,num_bits=1000,fibreLen=0
+    toWrite=run_BB84_sim(runtimes=10,num_bits=200,fibreLen=0
         ,memNoiseMmodel=None,processorNoiseModel=None,fibreNoise=0 
         ,sourceFreq=12e4,lenLoss=0
         ,qSpeed=2.083*10**5,cSpeed=2.083*10**5) #10**-9
