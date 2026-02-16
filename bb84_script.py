@@ -8,7 +8,7 @@ sys.path.append(scriptpath)
 from BB84_run import run_BB84_sim
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 mylogger = logging.getLogger(__name__)
 
 
@@ -29,8 +29,8 @@ if __name__ == "__main__":
     mylogger.debug("key rate list:{}\n".format(toWrite[2]))
 
     keyrate=sum(toWrite[2])/len(toWrite[2])
-    mylogger.info("Average key rate:{}\n".format(keyrate))
-    mylogger.info("cost/bit/sec :{}\n".format(4/keyrate))
+    mylogger.info(" Average key rate : {}kbps\n".format(round(keyrate/1000,3)))
+    mylogger.info(" Cost/bit/sec     : {}\n".format(round(4/keyrate,7)))
 
 
     '''
