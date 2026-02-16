@@ -62,8 +62,6 @@ def ManualFibreLossModel(key1,key2,numNodes,fibreLen=0,iniLoss=0.2,lenLoss=0.25,
         return newkey1,newkey2
 
 
-
-
 '''
 bitFlipNoice function to flip a bit for simulating classical noice.
 input:
@@ -87,14 +85,11 @@ def bitFlipNoice(bit,f0,f1,randomInteger):
         else:
             return 0
 
-
-
 '''
 Simply returns a list with 0 or 1 in given length.
 '''
 def Random_basis_gen(length):
     return [randint(0,1) for i in range(length)]
-
 
 
 '''
@@ -157,8 +152,6 @@ def CheckLoss(qList,bound):
     
     return res
 
-
-
 '''
 bitFlipNoise function to flip a bit for simulating classical noise.
 input:
@@ -182,9 +175,6 @@ def bitFlipNoise(bit,f0,f1,randomInteger):
         else:
             return 0
 
-
-
-
 '''
 Assign certain quantum states to bubits.
 input:
@@ -202,9 +192,6 @@ def AssignStatesBydm(qList,dmList):
         assign_qstate(qList[i], dmList[i], formalism=ns.qubits.QFormalism.DM) #ns.qubits.QFormalism.DM
 
     return qList
-
-
-
 
 
 
@@ -289,9 +276,6 @@ class QMeasureByPosition(QuantumProgram):
         yield self.run(parallel=False)
 
 
-
-
-
 '''
 Swap the qubits hold by this processor by position.
 input:
@@ -310,8 +294,6 @@ class QSwap(QuantumProgram):
     def program(self):
         self.apply(INSTR_SWAP, qubit_indices=self.position, physical=True)
         yield self.run(parallel=False)    
-
-
 
 
 '''
