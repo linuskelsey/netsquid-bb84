@@ -43,8 +43,7 @@ def lenfilter(var):
 
 # implementation & hardware configure
 
-def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,processorNoiseModel=None
-               ,loss_init=0,loss_len=0,qdelay=0,sourceFreq=8e7,lenLoss=0,qSpeed=2*10**5,cSpeed=2*10**5,fibreNoise=0):
+def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,processorNoiseModel=None,loss_init=0,loss_len=0,qdelay=0,sourceFreq=8e7,lenLoss=0,qSpeed=2*10**5,cSpeed=2*10**5,fibreNoise=0):
     
     MyKeyList_A=[]  # local protocol list A
     MyKeyList_B=[]  # local protocol list B
