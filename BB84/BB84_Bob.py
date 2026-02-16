@@ -6,7 +6,7 @@ import netsquid as ns
 import sys
 scriptpath = "lib/"
 sys.path.append(scriptpath)
-from functions import Random_basis_gen,Compare_basis
+from lib.functions import Random_basis_gen,Compare_basis
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -212,9 +212,3 @@ class BobProtocol(NodeProtocol):
         mylogger.debug("B keys:{}\n".format(self.key))
         #print("B key:",self.key)
         '''
-
-
-        
-
-        
-
