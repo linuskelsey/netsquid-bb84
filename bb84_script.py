@@ -1,6 +1,3 @@
-
-#from netsquid.components.models.qerrormodels import T1T2NoiseModel,DepolarNoiseModel,DephaseNoiseModel
-
 import sys
 scriptpath = "BB84/"
 sys.path.append(scriptpath)
@@ -10,7 +7,6 @@ from BB84_run import run_BB84_sim
 import logging
 logging.basicConfig(level=logging.INFO)
 mylogger = logging.getLogger(__name__)
-
 
 if __name__ == "__main__":
         
