@@ -3,10 +3,10 @@ import netsquid as ns
 from netsquid.nodes.node import Node
 from netsquid.components.qprocessor import QuantumProcessor,PhysicalInstruction
 from netsquid.components.instructions import INSTR_X,INSTR_H,INSTR_MEASURE,INSTR_MEASURE_X
-from netsquid.components.models.qerrormodels import FibreLossModel,T1T2NoiseModel,DepolarNoiseModel,DephaseNoiseModel
+#from netsquid.components.models.qerrormodels import FibreLossModel,T1T2NoiseModel,DepolarNoiseModel,DephaseNoiseModel
 from netsquid.components.qchannel import QuantumChannel
 from netsquid.components.cchannel import ClassicalChannel
-from netsquid.components.models import  FibreDelayModel
+#from netsquid.components.models import  FibreDelayModel
 
 
 from difflib import SequenceMatcher
@@ -62,27 +62,25 @@ def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,proc
         #noise_model=None
         Alice_processor=QuantumProcessor("processor_A", num_positions=2*10**2,
             mem_noise_models=memNoiseMmodel, phys_instructions=[
-            PhysicalInstruction(INSTR_X, duration=5, quantum_noise_model=processorNoiseModel),
-            PhysicalInstruction(INSTR_H, duration=5, quantum_noise_model=processorNoiseModel),
-            PhysicalInstruction(INSTR_MEASURE, duration=3700,quantum_noise_model=processorNoiseModel, parallel=True),
-            PhysicalInstruction(INSTR_MEASURE_X, duration=3700,quantum_noise_model=processorNoiseModel, parallel=True)])
+            PhysicalInstruction(INSTR_X, duration=0, quantum_noise_model=processorNoiseModel),
+            PhysicalInstruction(INSTR_H, duration=0, quantum_noise_model=processorNoiseModel),
+            PhysicalInstruction(INSTR_MEASURE, duration=0,quantum_noise_model=processorNoiseModel, parallel=True),
+            PhysicalInstruction(INSTR_MEASURE_X, duration=0,quantum_noise_model=processorNoiseModel, parallel=True)])
 
 
         Bob_processor=QuantumProcessor("processor_B", num_positions=2*10**2,
             mem_noise_models=memNoiseMmodel, phys_instructions=[
-            PhysicalInstruction(INSTR_X, duration=5, quantum_noise_model=processorNoiseModel),
-            PhysicalInstruction(INSTR_H, duration=5, quantum_noise_model=processorNoiseModel),
-            PhysicalInstruction(INSTR_MEASURE, duration=3700,quantum_noise_model=processorNoiseModel, parallel=True),
-            PhysicalInstruction(INSTR_MEASURE_X, duration=3700,quantum_noise_model=processorNoiseModel, parallel=True)])
+            PhysicalInstruction(INSTR_X, duration=0, quantum_noise_model=processorNoiseModel),
+            PhysicalInstruction(INSTR_H, duration=0, quantum_noise_model=processorNoiseModel),
+            PhysicalInstruction(INSTR_MEASURE, duration=0,quantum_noise_model=processorNoiseModel, parallel=True),
+            PhysicalInstruction(INSTR_MEASURE_X, duration=0,quantum_noise_model=processorNoiseModel, parallel=True)])
 
 
         # channels==================================================================
         
         MyQChannel=QuantumChannel("QChannel_A->B",delay=qdelay
             ,length=fibreLen
-            ,models={"myFibreLossModel": FibreLossModel(p_loss_init=0, p_loss_length=0, rng=None)
-            ,"mydelay_model": FibreDelayModel(c=qSpeed)
-            ,"myFibreNoiseModel":DepolarNoiseModel(depolar_rate=fibreNoise, time_independent=False)})
+            ,models=None)
         
         
         nodeA.connect_to(nodeB, MyQChannel,
@@ -91,9 +89,9 @@ def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,proc
         
 
         MyCChannel = ClassicalChannel("CChannel_B->A",delay=0,length=fibreLen
-            ,models={"myCDelayModel": FibreDelayModel(c=cSpeed)})
+            ,models=None)
         MyCChannel2= ClassicalChannel("CChannel_A->B",delay=0,length=fibreLen
-            ,models={"myCDelayModel": FibreDelayModel(c=cSpeed)})
+            ,models=None)
         
 
         nodeB.connect_to(nodeA, MyCChannel,
@@ -118,15 +116,14 @@ def run_BB84_sim(runtimes=1,num_bits=20,fibreLen=10**-9,memNoiseMmodel=None,proc
         
         
         # apply loss
-        mylogger.debug("Alice's key before loss:{}\n".format(Alice_protocol.key))
-        mylogger.debug("Bob's key before loss:{}\n".format(Bob_protocol.key))
+        #mylogger.debug("Alice's key before loss:{}\n".format(Alice_protocol.key))
+        #mylogger.debug("Bob's key before loss:{}\n".format(Bob_protocol.key))
 
-        firstKey,secondKey=ManualFibreLossModel(key1=Alice_protocol.key,key2=Bob_protocol.key,numNodes=2
-            ,fibreLen=fibreLen,iniLoss=0,lenLoss=lenLoss,algorithmFator=2) 
+        firstKey = Alice_protocol.key
+        secondKey = Bob_protocol.key
         
-        mylogger.debug("Alice's key after loss:{}\n".format(firstKey))
-        mylogger.debug("Bob's key after loss:{}\n".format(secondKey))
-
+        mylogger.debug("Alice's key:{}\n".format(firstKey))
+        mylogger.debug("Bob's key:{}\n".format(secondKey))
 
         
         MyKeyList_A.append(firstKey)
