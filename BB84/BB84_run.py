@@ -1,3 +1,4 @@
+from difflib import SequenceMatcher
 import netsquid as ns
 
 from netsquid.nodes import Node
@@ -8,12 +9,17 @@ scriptpath = "lib/"
 sys.path.append(scriptpath)
 from lib.functions import HybridDelayModel
 
+from BB84_Alice import AliceProtocol
+from BB84_Bob import BobProtocol
+
 
 
 def run_BB84_sims(runtimes=10,
                   fibreLen=1,
                   qDelay=0,
-                  qSpeed=0.8):
+                  qSpeed=0.8,
+                  photonCount=1024,
+                  sourceFreq=1e7):
     
     KeyListA    = []
     KeyListB    = []
@@ -60,3 +66,23 @@ def run_BB84_sims(runtimes=10,
                        remote_port_name=alice.ports["A.C.In"].name)
         
         # protocols =============================================
+        aliceProt = AliceProtocol(alice, photonCount, sourceFreq, portNames=alice.port_names)
+        bobProt = BobProtocol(bob, photonCount, portNames=bob.port_names)
+
+        bobProt.start()
+        aliceProt.start()
+
+        startTime = ns.util.simtools.sim_time(magnitude=ns.NANOSECOND)
+        stats = ns.sim_run()
+
+        endTime = bobProt.endTime
+
+        keyA, keyB = aliceProt.key, bobProt.key
+
+        KeyListA.append(keyA)
+        KeyListB.append(keyB)
+
+        s = SequenceMatcher(None, keyA, keyB)
+        KeyRateList.append(len(keyB) * s.ratio() / (endTime - startTime) * 10**9 ) # nanosecond conversion
+
+    return KeyListA, KeyListB, KeyRateList
