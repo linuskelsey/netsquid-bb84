@@ -68,3 +68,5 @@ class BobProtocol(NodeProtocol):
         
         # Basis exchange + sift
         yield from self.basis_reconciliation()
+
+        self.end_time = ns.sim_time()

@@ -1,7 +1,6 @@
 import netsquid as ns
 
 from netsquid.protocols import NodeProtocol
-from netsquid.components import QSource
 from netsquid.components.qsource import SourceStatus
 
 import sys

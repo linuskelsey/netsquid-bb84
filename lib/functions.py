@@ -24,13 +24,13 @@ class HybridDelayModel(DelayModel):
         return delay
     
 
-def rng_bin_list(n):
+def rng_bin_lst(n):
     return np.random.choice([0,1], size=n)
 
 
 class SinglePhotonSource(QSource):
     def __init__(self, name, sourceFreq, efficiency=1, status=SourceStatus.EXTERNAL):
-        super.__init__(self, name, frequency=sourceFreq, status=status)
+        super().__init__(name, frequency=sourceFreq, status=status)
         self.efficiency = efficiency
 
     def generate(self):
