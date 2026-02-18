@@ -25,7 +25,7 @@ def run_BB84_sims(runtimes=10,
 
         # nodes =================================================
         alice = Node("Alice", port_names=["A.Q.Out", "A.C.Out", "A.C.In"])
-        bob   = Node("Bob", port_names=["B.Q.In", "B.C.Out", "B.C.In"])
+        bob   = Node("Bob", port_names=["B.Q.In", "B.C.In", "B.C.Out"])
 
         # channels ==============================================
         QChann = QuantumChannel("[A: -Q-> :B]",

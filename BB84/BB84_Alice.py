@@ -42,24 +42,14 @@ class AliceProtocol(NodeProtocol):
         self.port_ci_name = portNames[2]
         self.basis_list   = rng_bin_lst(photonCount)
         self.bit_list     = rng_bin_lst(photonCount)
+
         self.key          = []
-        self.source_Qlist = []
-        self.source_freq  = sourceFreq
 
         # attaching a lib.functions.SinglePhotonSource object external to the node and handling output with store_source_output method
         self.a_source = SinglePhotonSource("[A: SPS]", sourceFreq, efficiency=sourceEff, status=SourceStatus.EXTERNAL)
         self.a_source.ports["qout0"].bind_output_handler(self.store_source_output)
-
-
-    def encode_and_send(self):
-        """
-        Encode basis and bit and send batch on quantum port
-        """
-        for i, q in enumerate(self.source_Qlist):
-            basis, bit = self.basis_list[i], self.bit_list[i]
-            if basis: ns.H(q)
-            if bit: ns.X(q)
-        self.node.ports[self.port_qo_name].tx_output(self.source_Qlist)
+        self.source_Qlist = []
+        self.source_freq  = sourceFreq
 
 
     def store_source_output(self, qubit):
@@ -75,6 +65,17 @@ class AliceProtocol(NodeProtocol):
         if len(self.source_Qlist) == self.photon_count:
             self.encode_and_send()
             self.source_Qlist = []
+
+
+    def encode_and_send(self):
+        """
+        Encode basis and bit and send batch on quantum port
+        """
+        for i, q in enumerate(self.source_Qlist):
+            basis, bit = self.basis_list[i], self.bit_list[i]
+            if basis: ns.H(q)
+            if bit: ns.X(q)
+        self.node.ports[self.port_qo_name].tx_output(self.source_Qlist)
 
 
     def basis_reconciliation(self):
@@ -95,7 +96,7 @@ class AliceProtocol(NodeProtocol):
 
     def run(self):
         """
-        Run the protocol in full
+        Run Alice's protocol in full
         """
         # generate photons and wait for completion
         for _ in range(self.photon_count):
