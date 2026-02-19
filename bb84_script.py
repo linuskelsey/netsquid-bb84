@@ -16,6 +16,9 @@ def print_results(key_list_a, key_list_b, key_rate_list):
     Print simulation statistics.
     """
     print("\n=== BB84 Simulation Results ===")
+
+    key_list_a = [[str(bit) for bit in _] for _ in key_list_a]
+    key_list_b = [[str(bit) for bit in _] for _ in key_list_b]
     
     # Average sifted key length
     avg_key_len_a = np.mean([len(k) for k in key_list_a])
@@ -24,20 +27,20 @@ def print_results(key_list_a, key_list_b, key_rate_list):
     print(f"Average Bob sifted key length:     {avg_key_len_b:.1f}")
     
     # QBER (bit error rate) across runs
-    total_errors = sum(SequenceMatcher(None, ka, kb).get_matching_blocks()[0].size != len(ka) for ka, kb in zip(key_list_a, key_list_b))
-    total_bits = sum(len(kb) for kb in key_list_b)
-    qber = total_errors / total_bits if total_bits > 0 else 0
+    qber = 1 - np.mean([SequenceMatcher(None, ka, kb).ratio() for ka, kb in zip(key_list_a, key_list_b)])
     print(f"\nAverage QBER:                      {qber:.2%}")
+
+    print(f"Full key match ratio:              {SequenceMatcher(None, key_list_a[0], key_list_b[0]).ratio():.3f}")
     
     # Key rate (bits/ns, scaled to bits/s)
     avg_key_rate = np.mean(key_rate_list)
     print(f"\nAverage key rate:                  {avg_key_rate * 1e9:.2e} bits/s")
     
-    print("\nRaw keys (first run sample):")
-    print(f"Alice: {key_list_a[0][:50]}...")  # First 50 bits
-    print(f"Bob:   {key_list_b[0][:50]}...")
+    print("\nRaw keys (first run sample, first 50 bits):")
+    print(f"Alice: {''.join(key_list_a[0][:50])}...")  # First 50 bits
+    print(f"Bob:   {''.join(key_list_b[0][:50])}...")
 
-def main(runtimes=10, fibre_len=1, photon_count=1024, source_freq=1e7, q_speed=0.8):
+def main(runtimes=1, fibre_len=1, photon_count=1024, source_freq=1e7, q_speed=0.8):
     """
     Run BB84 simulations.
     
