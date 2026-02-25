@@ -25,6 +25,8 @@ def run_BB84_sims(runtimes=10,
     KeyListB    = []
     KeyRateList = []
 
+    counts = []
+
     for _ in range(runtimes):
 
         ns.sim_reset()
@@ -81,17 +83,5 @@ def run_BB84_sims(runtimes=10,
 
         KeyListA.append(keyA)
         KeyListB.append(keyB)
-
-        s = SequenceMatcher(None, keyA, keyB)
-        KeyRateList.append(len(keyB) * s.ratio() / (endTime - startTime) * 10**9 ) # nanosecond conversion
-
-        print("Sifted indices Alice:", [i for i, b in enumerate(aliceProt.basis_list) if b == aliceProt.bob_bases[i]][:10])
-        print("Sifted indices Bob:", [i for i, b in enumerate(bobProt.basis_list) if b == aliceProt.basis_list[i]][:10])  # Bob saw Alice's bases
-        match_pos = 0
-        for i, bitA in enumerate(aliceProt.key):
-            bitB = bobProt.key[i]
-            if bitA == bitB: match_pos += 1
-            else: print(f"Mismatch at sifted pos {i} (raw idx ~{i*2}): A={bitA}, B={bitB}")
-        print(f"Matches in first 20 sifted: {match_pos}/20")
 
     return KeyListA, KeyListB, KeyRateList

@@ -22,8 +22,11 @@ class BobProtocol(NodeProtocol):
         self.basis_list   = rng_bin_lst(photonCount)
 
         self.meas_results = []
+        self.mask         = []
         self.key          = []
         self.end_time     = None
+
+        self.bits = []
 
 
     def receive_and_measure(self):
@@ -32,10 +35,8 @@ class BobProtocol(NodeProtocol):
         """
         # wait for qubit array input to port
         port = self.node.ports[self.port_qi_name]
-        print("[Bob] Waiting for qubit batch...")
         yield self.await_port_input(port)
         qubit_batch = port.rx_input().items
-        print(f"[Bob] Received batch of {len(qubit_batch)} qubits")
         
         # measure and store
         for i, q in enumerate(qubit_batch):
@@ -43,27 +44,27 @@ class BobProtocol(NodeProtocol):
             if basis: ns.qubits.operate(q,ns.H)  # if: X basis, then: rotate
             meas = ns.qubits.measure(q)[0]       # Z basis measurement
             self.meas_results.append(meas)       # outcome bit
-        print(f"[Bob] Measured batch of {len(self.meas_results)} qubits")
+            self.bits.append((basis, meas))
+        
+        self.key = self.meas_results
 
 
     def basis_reconciliation(self):
         """
         Receive basis choices from Alice, send Bob's and sift common bits into self.key
         """
-        print("[Bob] Sending my basis list first...")
         # send to Alice
         self.node.ports[self.port_co_name].tx_output(self.basis_list)
 
-        print("[Bob] Waiting for Alice's bases...")
         # identify classical in port and await Alice's basis list
         port = self.node.ports[self.port_ci_name]
         yield self.await_port_input(port)
         alice_bases = port.rx_input().items
-        print(f"[Bob] Got Alice's bases: {len(alice_bases)} bits")
+
+        self.mask = [i for i, b in enumerate(alice_bases) if b == self.basis_list[i]]
         
         # finalise key output by matching bases
-        self.key = [bit for i, bit in enumerate(self.meas_results) if self.basis_list[i] == alice_bases[i]]
-        print(f"[Bob] Sifted key: {len(self.key)} bits")
+        # self.key = [bit for i, bit in enumerate(self.meas_results) if self.basis_list[i] == alice_bases[i]]
 
 
     def run(self):
