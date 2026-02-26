@@ -28,12 +28,12 @@ class AliceProtocol(NodeProtocol):
         source_freq     frequency of attached photon source in Hz
 
     Parameters:
-        portNames       list of node ports to be stored in protocol
         sourceEff       efficiency of attached photon source
+        portNames       list of node ports to be stored in protocol
     """
 
 
-    def __init__(self, node, photonCount, sourceFreq, portNames=["A.Q.Out","A,C.Out","A.C.In"], sourceEff=1):
+    def __init__(self, node, photonCount, sourceFreq, sourceEff=1, portNames=["A.Q.Out","A,C.Out","A.C.In"]):
         super().__init__()
         self.node         = node
         self.photon_count = photonCount
