@@ -21,3 +21,11 @@ class EndNodeProtocol(NodeProtocol):
     Parameters:
         
     """
+    def __init__(self, node, name, photonCount, portNames=[]):
+        super().__init__()
+        self.node = node
+        self.name = name
+        self.photon_count = photonCount
+        self.port_qo_name = portNames[0]
+        self.relay_port_co_name = portNames[1]
+        self.relay_port_ci_name = portNames[2]
