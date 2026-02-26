@@ -39,9 +39,9 @@ class EndNodeProtocol(NodeProtocol):
         # distinguish node on which the protocol runs
         self.node = node
         self.name = name.title()
-        # number of photons to be transmitted to Charlie
+        # number of photons to be transmitted to relay
         self.photon_count = photonCount
-        # Quantum out port to Charlie; Classical in/out port from/to Charlie - no A <-> B comms required
+        # Quantum out port to relay; Classical in/out port from/to relay - no A <-> B comms required
         self.port_qo_name = portNames[0]
         self.port_co_name = portNames[1]
         self.port_ci_name = portNames[2]
