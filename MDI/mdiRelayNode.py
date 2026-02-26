@@ -2,12 +2,6 @@ import netsquid as ns
 
 from netsquid.components.qsource import SourceStatus
 from netsquid.protocols import NodeProtocol
-from netsquid.qubits import qubit
-
-import sys
-scriptpath = "lib/"
-sys.path.append(scriptpath)
-from lib.functions import rng_bin_lst
 
 
 
