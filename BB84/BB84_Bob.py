@@ -78,4 +78,4 @@ class BobProtocol(NodeProtocol):
         yield from self.basis_reconciliation()
 
         # set end time of simulation
-        self.end_time = ns.sim_time()
+        self.end_time = ns.sim_time(magnitude=ns.NANOSECOND)

@@ -49,7 +49,7 @@ class EndNodeProtocol(NodeProtocol):
         self.basis_list = rng_bin_lst(self.photon_count)
         self.bit_list = rng_bin_lst(self.photon_count)
         # key
-        self.key = self.bit_list
+        self.key = self.bit_list.copy()
         # source and handling for source
         self.q_source = SinglePhotonSource(f"[{self.name[0]}: SPS]", sourceFreq, efficiency=sourceEff, status=SourceStatus.EXTERNAL)
         self.q_source.ports["qout0"].bind_output_handler(self.store_source_output)
@@ -59,8 +59,10 @@ class EndNodeProtocol(NodeProtocol):
         self.q_list = []
         # mask for bit flips and discards
         self.mask = []
-        # boolean to 
+        # boolean to flip bits or not
         self.flipper = False
+        # end time for timing data
+        self.end_time = None
 
 
     def store_source_output(self, qubit):
@@ -95,7 +97,7 @@ class EndNodeProtocol(NodeProtocol):
         """
         clock = Clock(f"[{self.name[0]}: Clock]", frequency=self.source_freq, max_ticks=self.photon_count)
         try:
-            clock.ports["cout"].connect(self.a_source.ports["trigger"])
+            clock.ports["cout"].connect(self.q_source.ports["trigger"])
         except Exception as e:
             print(f"[{self.name}] Clock connect failed: ", e)
             
@@ -113,8 +115,8 @@ class EndNodeProtocol(NodeProtocol):
         self.meas = port.rx_input().items
 
         # discard non-measurements
-        for i in self.meas:
-            if i == 0:
+        for i, m in enumerate(self.meas):
+            if m == 0:
                 self.key[i] = "x"
 
 
@@ -139,8 +141,8 @@ class EndNodeProtocol(NodeProtocol):
         """
         for i, m in enumerate(self.meas):
             if m == 1 and self.basis_list[i] == 1:
-                self.key[i] += 1
-                self.key[i] %= 2
+                if isinstance(self.key[i], int):
+                    self.key[i] = (self.key[i] + 1) % 2
 
 
     def discard(self):
@@ -163,13 +165,13 @@ class EndNodeProtocol(NodeProtocol):
         self.gen_qubits()
 
         # receive BSMs and discard non-measurementss
-        self.discard_non_measurements()
+        yield from self.discard_non_measurements()
 
         # send bases to Charlie
         self.node.ports[self.port_co_name].tx_output(self.basis_list)
 
         # receive basis matching and sift
-        self.discard_basis_mismatch()
+        yield from self.discard_basis_mismatch()
 
         # flip by measurement results
         if self.flipper:
@@ -177,3 +179,4 @@ class EndNodeProtocol(NodeProtocol):
 
         # final key list without discarded bits
         self.discard()
+        self.end_time = ns.sim_time(magnitude=ns.NANOSECOND)

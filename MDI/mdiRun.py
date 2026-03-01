@@ -97,13 +97,18 @@ def run_mdi_sims(runtimes=10,
                          remote_port_name=bob.ports["B.C.In"].name)
         
         # protocols =============================================
-        aliceProt = EndNodeProtocol(alice, 'alice', photonCount, sourceFreq, portNames=list(alice.ports.keys))
-        bobProt = EndNodeProtocol(bob, 'bob', photonCount, sourceFreq, portNames=list(bob.ports.keys))
-        charlieProt = RelayNodeProtocol(charlie, 'charlie', photonCount, portNames=list(charlie.ports.keys))
+        aliceProt = EndNodeProtocol(alice, 'alice', photonCount, sourceFreq, portNames=list(alice.ports.keys()))
+        bobProt = EndNodeProtocol(bob, 'bob', photonCount, sourceFreq, portNames=list(bob.ports.keys()))
+        charlieProt = RelayNodeProtocol(charlie, 'charlie', photonCount, portNames=list(charlie.ports.keys()))
 
         charlieProt.start()
         aliceProt.start()
         bobProt.start()
+
+        startTime = ns.util.simtools.sim_time(magnitude=ns.NANOSECOND)
+        stats = ns.sim_run()
+
+        endTime = max(aliceProt.end_time, bobProt.end_time)
 
         keyA, keyB = aliceProt.key, bobProt.key
 

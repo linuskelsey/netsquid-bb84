@@ -49,25 +49,19 @@ class RelayNodeProtocol(NodeProtocol):
         q_list1 = port.rx_input().items
 
         for q0, q1 in zip(q_list0, q_list1):
-            # create EPR pair from two distinct qubits
-            ns.qubits.operate(q0, ns.H)
-            ns.qubits.operate([q0, q1], ns.CNOT)
-
             # BSM
             ns.qubits.operate([q0,q1], ns.CNOT)
             ns.qubits.operate(q0, ns.H)
 
-            a = ns.qubits.measure(q0)
-            b = ns.qubits.measure(q1)
+            a, _ = ns.qubits.measure(q0)
+            b, _ = ns.qubits.measure(q1)
 
             # psi minus
-            if a * b == 1:
+            if a == 1 and b == 1:
                 self.meas.append(-1)
-
             # psi plus
-            if a == 0 and b == 1:
+            elif a == 0 and b == 1:
                 self.meas.append(1)
-
             # otherwise (modelling the BS/PBS setup of Lo et al. 2012)
             else:
                 self.meas.append(0)
@@ -100,11 +94,11 @@ class RelayNodeProtocol(NodeProtocol):
         Run RelayNodeProtocol.
         """
         # BSMs
-        self.bsm_total()
+        yield from self.bsm_total()
 
         # send measurement results
         self.node.ports[self.port_c0_o_name].tx_output(self.meas)
         self.node.ports[self.port_c1_o_name].tx_output(self.meas)
 
         #receive bases and send matching to end nodes
-        self.basis_matching()
+        yield from self.basis_matching()
