@@ -18,8 +18,7 @@ import argparse
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.append("lib/")  # For functions.py
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append("MDI/") # For MDI protocols
 
 from MDI.mdiRun import run_mdi_sims
@@ -107,7 +106,7 @@ def main():
         qSpeed      = args.speed
     )
 
-    print("  Per-run results:")
+    print("\n  Per-run results:")
     print("-" * 55)
     for i, (keyA, keyB) in enumerate(zip(KeyListA, KeyListB)):
         print_run_summary(i, keyA, keyB, args.photons)

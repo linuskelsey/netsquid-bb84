@@ -85,8 +85,8 @@ class RelayNodeProtocol(NodeProtocol):
             if b != basis_list1[i]:
                 discard.append(i)
 
-        self.node.ports[self.port_c0_o_name].tx_output(discard)
-        self.node.ports[self.port_c1_o_name].tx_output(discard)
+        self.node.ports[self.port_c0_o_name].tx_output(discard if len(discard) > 0 else [-1])
+        self.node.ports[self.port_c1_o_name].tx_output(discard if len(discard) > 0 else [-1])
 
 
     def run(self):

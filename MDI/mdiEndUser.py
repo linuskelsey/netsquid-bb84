@@ -5,8 +5,8 @@ from netsquid.components import Clock
 from netsquid.components.qsource import SourceStatus
 
 import sys
-scriptpath = "lib/"
-sys.path.append(scriptpath)
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "lib"))
 from lib.functions import rng_bin_lst, SinglePhotonSource
 
 
@@ -95,7 +95,9 @@ class EndNodeProtocol(NodeProtocol):
         """
         Create an external clock attaching to the SPS that tells it when to emit.
         """
-        clock = Clock(f"[{self.name[0]}: Clock]", frequency=self.source_freq, max_ticks=self.photon_count)
+        clock = Clock(f"[{self.name[0]}: Clock]", 
+                        frequency=self.source_freq, 
+                        max_ticks=self.photon_count)
         try:
             clock.ports["cout"].connect(self.q_source.ports["trigger"])
         except Exception as e:
@@ -110,7 +112,6 @@ class EndNodeProtocol(NodeProtocol):
         """
         port = self.node.ports[self.port_ci_name]
         yield self.await_port_input(port)
-
         # collect measurements results
         self.meas = port.rx_input().items
 
@@ -126,22 +127,24 @@ class EndNodeProtocol(NodeProtocol):
         """
         port = self.node.ports[self.port_ci_name]
         yield self.await_port_input(port)
-
         # collect discard list of indices
         discard = port.rx_input().items
-
         # discard basis mismatches
         for i in discard:
-            self.key[i] = "x"
+            if i >= 0:
+                self.key[i] = "x"
 
 
     def flip(self):
-        """
-        Flip bits in diagonal, psi plus case
-        """
         for i, m in enumerate(self.meas):
-            if m == 1 and self.basis_list[i] == 1:
-                if isinstance(self.key[i], int):
+            if not isinstance(self.key[i], int):
+                continue
+            if m == 0:
+                continue
+            if self.basis_list[i] == 0:  # Z-basis: always disagree before flip, so always flip
+                self.key[i] = (self.key[i] + 1) % 2
+            else:  # X-basis: need to determine correct condition
+                if m == -1:  # try this first
                     self.key[i] = (self.key[i] + 1) % 2
 
 

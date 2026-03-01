@@ -5,8 +5,8 @@ from netsquid.nodes import Node
 from netsquid.components import QuantumChannel, ClassicalChannel
 
 import sys
-scriptpath = "lib/"
-sys.path.append(scriptpath)
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "lib"))
 from lib.functions import HybridDelayModel
 
 from mdiEndUser import EndNodeProtocol
@@ -59,22 +59,26 @@ def run_mdi_sims(runtimes=10,
         CChann1 = ClassicalChannel("[A: -C-> :C]",
                                 delay=0,
                                 length=fibreLen,
-                                models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)})
+                                # models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)}
+                                )
         
         CChann2 = ClassicalChannel("[B: -C-> :C]",
                                 delay=0,
                                 length=fibreLen,
-                                models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)})
+                                # models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)}
+                                )
         
         CChann3 = ClassicalChannel("[C: -C-> :A]",
                                 delay=0,
                                 length=fibreLen,
-                                models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)})
+                                # models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)}
+                                )
         
         CChann4 = ClassicalChannel("[C: -C-> :B]",
                                 delay=0,
                                 length=fibreLen,
-                                models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)})
+                                # models={"delay_model": HybridDelayModel(SoL_fraction=qSpeed,stddev=0.05)}
+                                )
         
         alice.connect_to(charlie,
                          CChann1,
@@ -97,18 +101,27 @@ def run_mdi_sims(runtimes=10,
                          remote_port_name=bob.ports["B.C.In"].name)
         
         # protocols =============================================
-        aliceProt = EndNodeProtocol(alice, 'alice', photonCount, sourceFreq, portNames=list(alice.ports.keys()))
-        bobProt = EndNodeProtocol(bob, 'bob', photonCount, sourceFreq, portNames=list(bob.ports.keys()))
-        charlieProt = RelayNodeProtocol(charlie, 'charlie', photonCount, portNames=list(charlie.ports.keys()))
+        aliceProt = EndNodeProtocol(alice, 'alice', photonCount, sourceFreq, 
+                                    portNames=["A.Q.Out", "A.C.Out", "A.C.In"])
+        bobProt = EndNodeProtocol(bob, 'bob', photonCount, sourceFreq,
+                                  portNames=["B.Q.Out", "B.C.Out", "B.C.In"])
+        charlieProt = RelayNodeProtocol(charlie, 'charlie', photonCount,
+                                        portNames=["C.Q.In.A", "C.Q.In.B", "C.C.In.A", "C.C.In.B", "C.C.Out.A", "C.C.Out.B"])
+        
+        bobProt.flipper = True
 
         charlieProt.start()
         aliceProt.start()
         bobProt.start()
 
         startTime = ns.util.simtools.sim_time(magnitude=ns.NANOSECOND)
-        stats = ns.sim_run()
+        stats = ns.sim_run(end_time=ns.SECOND)
 
-        endTime = max(aliceProt.end_time, bobProt.end_time)
+        if aliceProt.end_time is not None and bobProt.end_time is not None:
+            endTime = max(aliceProt.end_time, bobProt.end_time)
+        else:
+            print(f"WARNING: protocols did not complete in run {_+1}/{runtimes}, skipping")
+            continue
 
         keyA, keyB = aliceProt.key, bobProt.key
 
