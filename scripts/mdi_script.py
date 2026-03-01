@@ -81,7 +81,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run MDI-QKD netsquid simulation.")
     parser.add_argument("--runtimes", type=int,   default=10,    help="Number of simulation runs")
     parser.add_argument("--photons",  type=int,   default=1024,  help="Photons per run")
-    parser.add_argument("--fibre",    type=float, default=1.0,   help="Fibre length in km")
+    parser.add_argument("--fibre",    type=float, default=100,   help="Fibre length in km")
     parser.add_argument("--freq",     type=float, default=1e7,   help="Source frequency in Hz")
     parser.add_argument("--speed",    type=float, default=0.8,   help="Speed of light fraction")
     args = parser.parse_args()

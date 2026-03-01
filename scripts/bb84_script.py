@@ -1,8 +1,7 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.append("lib/")  # For functions.py
-sys.path.append("BB84/") # For BB84 protocols
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append("BB84/") # For MDI protocols
 
 import numpy as np
 from difflib import SequenceMatcher
@@ -11,7 +10,7 @@ from BB84.BB84_run import run_BB84_sims
 
 
 
-def main(runtimes=10, fibre_len=100, photon_count=32, source_freq=1e7, q_speed=0.8):
+def main(runtimes=10, fibre_len=100, photon_count=1024, source_freq=1e7, q_speed=0.8):
     """
     Run BB84 simulations.
     
